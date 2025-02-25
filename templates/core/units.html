@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Units - KU Notes Hub</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'css/units.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="/" class="logo"><strong>KU Notes Hub</strong></a>
+        </div>
+
+        <div class="nav-center">
+            <input type="text" id="unitSearch" class="search-box" placeholder="Search Unit Code or Title">
+            <button class="search-btn">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+
+        <div class="nav-right">
+            <button class="icon-btn"><i class="fas fa-bars"></i></button>
+            <button class="icon-btn"><i class="fas fa-user"></i></button>
+            <button class="icon-btn"><i class="fas fa-cog"></i></button>
+        </div>
+    </nav>
+
+    <div class="units-container">
+        <h1>Available Files</h1>
+        <div class="units-list">
+            <span class="loader"></span>
+
+            <!-- Units will be populated here -->
+        </div>
+    </div>
+
+    <script src="{% static 'js/units.js' %}"></script>
+</body>
+</html>

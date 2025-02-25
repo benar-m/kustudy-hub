@@ -13,7 +13,7 @@ class UnitPdf(models.Model):
     pdfTitle = models.CharField(max_length=1000)
     pdfFile = CloudinaryField('pdfs/')
     pdfDownloadLink = models.URLField(max_length=2000, blank=True, null=True)
-    pdfPageCount = models.IntegerField()
+    pdfPageCount = models.IntegerField(null=True, blank=True)
     pdfSize = models.IntegerField(help_text="Size in KB",blank=True)
     pdfDate = models.DateField(auto_now_add=True)
     uploadedBy = models.CharField(max_length=100, blank=True, null=True,default="Anonymous")

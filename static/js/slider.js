@@ -1,24 +1,60 @@
 document.addEventListener('DOMContentLoaded', () => {
+
     const slides = document.querySelectorAll('.slide');
     const dots = document.querySelectorAll('.dot');
     const prevBtn = document.querySelector('.prev-btn');
     const nextBtn = document.querySelector('.next-btn');
     let currentSlide = 0;
+    const notesGrid = document.querySelector('.notes-grid');
+    const loader= document.querySelector('.loader');
+    const searchInput = document.querySelector('.search-box');
+    let units=[];
 
+    // Fetch data from the API
+    fetch('/api/units')
+        .then(response => response.json())
+        .then(data => {
+            units = data;
+            notesGrid.innerHTML = '';
+            loader.style.display = 'none';
+            data.forEach(unit => {
+                const noteCard = document.createElement('div');
+                noteCard.className = 'note-card';
+                noteCard.id = unit.id; 
+                noteCard.innerHTML = `
+                    <div class="pdf-icon">PDF</div>
+                    <div class="note-info">
+                        <div class="course-code"> ${unit.unitCode}</div>
+                        <h3> ${unit.unitTitle}</h3>
+                        <a href="/units/?unitId=${unit.id}"> 
+                            <button class="view-pdf-btn">VIEW FILES</button>
+                        </a>
+                    </div>
+                `;
+                notesGrid.appendChild(noteCard); // Append the card to the grid
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+
+    // Function to show a specific slide
     function showSlide(n) {
         slides.forEach(slide => slide.classList.remove('active'));
         dots.forEach(dot => dot.classList.remove('active'));
-        
+
         currentSlide = (n + slides.length) % slides.length;
-        
+
         slides[currentSlide].classList.add('active');
         dots[currentSlide].classList.add('active');
     }
 
+    // Function to move to the next slide
     function nextSlide() {
         showSlide(currentSlide + 1);
     }
 
+    // Function to move to the previous slide
     function prevSlide() {
         showSlide(currentSlide - 1);
     }
@@ -33,4 +69,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Auto advance slides every 5 seconds
     setInterval(nextSlide, 5000);
+
+    //Search Functionality
+    searchInput.addEventListener('input', () => {
+        const searchValue = searchInput.value.toLowerCase();
+        const filteredUnits = units.filter(unit => {
+            return unit.unitCode.toLowerCase().includes(searchValue) || unit.unitTitle.toLowerCase().includes(searchValue);
+        });
+
+        notesGrid.innerHTML = '';
+        filteredUnits.forEach(unit => {
+            const noteCard = document.createElement('div');
+            noteCard.className = 'note-card';
+            noteCard.id = unit.id;
+            noteCard.innerHTML = `
+                <div class="pdf-icon">PDF</div>
+                <div class="note-info">
+                    <div class="course-code"> ${unit.unitCode}</div>
+                    <h3> ${unit.unitTitle}</h3>
+                    <a href="/units/?unitId=${unit.id}">
+                        <button class="view-pdf-btn">VIEW FILES</button>
+                    </a>
+                </div>
+            `;
+            notesGrid.appendChild(noteCard); // Append the card to the grid
+        });
+    });
 });

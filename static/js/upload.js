@@ -1,90 +1,78 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const uploadModeToggle = document.getElementById('uploadModeToggle');
+
     const singleUploadForm = document.getElementById('singleUploadForm');
-    const batchUploadForm = document.getElementById('batchUploadForm');
-    const singleFileArea = document.getElementById('singleFileArea');
-    const batchFileArea = document.getElementById('batchFileArea');
     const singleFileUpload = document.getElementById('singleFileUpload');
-    const batchFileUpload = document.getElementById('batchFileUpload');
-    const fileList = document.getElementById('fileList');
+    const singleFileArea = document.getElementById('singleFileArea');
+    const loader= document.querySelector('.loader');
+    loader.style.display = 'none';
 
-    // Toggle between single and batch upload modes
-    uploadModeToggle.addEventListener('change', () => {
-        if (uploadModeToggle.checked) {
-            singleUploadForm.classList.remove('active');
-            batchUploadForm.classList.add('active');
-        } else {
-            singleUploadForm.classList.add('active');
-            batchUploadForm.classList.remove('active');
-        }
-    });
-
-    // Single file upload handling
+    // Single file area click triggers file input
     singleFileArea.addEventListener('click', () => singleFileUpload.click());
-    
+
+    // Show selected file name
     singleFileUpload.addEventListener('change', (e) => {
         const file = e.target.files[0];
-        if (file) {
-            if (validateFile(file)) {
-                updateUploadArea(singleFileArea, file.name);
-            } else {
-                singleFileUpload.value = '';
-            }
+        if (file && validateFile(file)) {
+            updateUploadArea(singleFileArea, file.name);
+        } else {
+            singleFileUpload.value = ''; // Reset invalid file
         }
     });
 
-    // Batch file upload handling
-    batchFileArea.addEventListener('click', () => batchFileUpload.click());
+    document.getElementById('singleUploadButton').addEventListener('click', async () => {
+        console.log("Single file upload button clicked!");
     
-    batchFileUpload.addEventListener('change', (e) => {
-        const files = Array.from(e.target.files);
-        handleBatchFiles(files);
-    });
+        const unitCode = document.getElementById('unitCode').value.trim();
+        const unitTitle = document.getElementById('unitTitle').value.trim();
+        const documentType = document.getElementById('documentType').value;
+        const pdf = singleFileUpload.files[0];
+    
+        if (!unitCode || !unitTitle || !documentType || !pdf) {
+            alert('All fields are required');
+            return;
+        }
+        if (!validateFile(pdf)) {
+            return;
+        }
+    
+        const formData = new FormData();
+        formData.append('unitCode', unitCode);
+        formData.append('unitTitle', unitTitle);
+        formData.append('documentType', documentType);
+        formData.append('pdf', pdf);
+        
+        try {
+            console.log("Sending file...");
+            loader.style.display = 'block';
+            const res = await fetch('/api/upload_pdf/', {
+                method: 'POST',
+                body: formData
+            });
+    
+            console.log("Response received:", res);
+    
+            const data = await res.json();
+            loader.style.display = 'none';
+            updateUploadArea(singleFileArea, 'Choose a file');
 
-    // Drag and drop handling
-    [singleFileArea, batchFileArea].forEach(area => {
-        area.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            area.classList.add('dragover');
-        });
-
-        area.addEventListener('dragleave', () => {
-            area.classList.remove('dragover');
-        });
-
-        area.addEventListener('drop', (e) => {
-            e.preventDefault();
-            area.classList.remove('dragover');
-            
-            const files = Array.from(e.dataTransfer.files);
-            if (area === singleFileArea) {
-                if (files.length > 0 && validateFile(files[0])) {
-                    singleFileUpload.files = e.dataTransfer.files;
-                    updateUploadArea(singleFileArea, files[0].name);
-                }
-            } else {
-                handleBatchFiles(files);
+            if (data.status === '201') {
+                alert('File uploaded successfully');
+                singleUploadForm.reset();
+                updateUploadArea(singleFileArea, 'Choose a file');
             }
-        });
-    });
 
-    // Form submissions
-    singleUploadForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        // Add your form submission logic here
-        console.log('Single file upload submitted');
+        } catch (err) {
+            console.error("Upload failed:", err);
+            alert('An error occurred. Please try again');
+        }
     });
+    
 
-    batchUploadForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        // Add your form submission logic here
-        console.log('Batch upload submitted');
-    });
 
-    // Helper functions
+    // Helper function: Validate file
     function validateFile(file) {
         if (!file.type.includes('pdf')) {
-            alert('Please upload PDF files only');
+            alert('Only PDF files are allowed');
             return false;
         }
         if (file.size > 10 * 1024 * 1024) {
@@ -94,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return true;
     }
 
+    // Helper function: Update upload area with file name
     function updateUploadArea(area, fileName) {
         const content = area.querySelector('.upload-content');
         content.innerHTML = `
@@ -101,30 +90,5 @@ document.addEventListener('DOMContentLoaded', () => {
             <p>${fileName}</p>
             <button type="button" class="browse-btn">Change File</button>
         `;
-    }
-
-    function handleBatchFiles(files) {
-        if (files.length > 10) {
-            alert('Maximum 10 files allowed for batch upload');
-            return;
-        }
-
-        fileList.innerHTML = '';
-        files.forEach(file => {
-            if (validateFile(file)) {
-                const fileItem = document.createElement('div');
-                fileItem.className = 'file-item';
-                fileItem.innerHTML = `
-                    <span>${file.name}</span>
-                    <i class="fas fa-times remove-file"></i>
-                `;
-                fileList.appendChild(fileItem);
-
-                // Add remove file functionality
-                fileItem.querySelector('.remove-file').addEventListener('click', () => {
-                    fileItem.remove();
-                });
-            }
-        });
     }
 });

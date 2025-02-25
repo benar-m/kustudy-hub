@@ -156,7 +156,8 @@ body {
 .notes-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
+    /* grid-template-columns: repeat(4,1fr); */
+    gap: 1rem;
     padding: 2rem;
     max-width: 1200px;
     margin: 0 auto;
@@ -175,7 +176,7 @@ body {
 }
 
 .pdf-icon {
-    background-color: #ff0000;
+    background-color: #fd4d4d;
     color: white;
     width: 60px;
     height: 60px;
@@ -215,7 +216,7 @@ body {
 }
 
 .view-pdf-btn {
-    background-color: #0011ff;
+    background-color: #000000;
     color: white;
     border: none;
     padding: 0.6rem 1.5rem;
@@ -228,6 +229,60 @@ body {
 .view-pdf-btn:hover {
     background-color: #ffffff;
     color: #000000;
+}
+.loader {
+    position: relative;
+    width: 100px;
+    height: 16px;
+    margin: 0 auto;
+    align-items: center;
+    justify-content: center;
+  }
+.loader:before , .loader:after{
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #e70000;
+    box-shadow: 32px 0 #220000;
+    left: 0;
+    top: 0;
+    animation: ballMoveX 1s linear infinite;
+  }
+.loader:after {
+    box-shadow: none;
+    transform-origin: 40px 0;
+    transform: rotate(-153deg);
+    animation: rotateLoader 1s linear infinite;
+  }
+
+@keyframes rotateLoader {
+    0% , 10%{ transform: rotate(-153deg); }
+    90%, 100% { transform: rotate(0deg); }
+  }
+@keyframes ballMoveX {
+    0% , 10%{  transform: translateX(0) }
+    90%, 100% { transform: translateX(32px) }
+  }
+      
+@media (max-width: 768px) {
+    .nav-center {
+        margin: 0 1rem;
+    }
+
+    .slide {
+        padding: 2rem 1rem;
+    }
+
+    .slide h2 {
+        font-size: 1.5rem;
+    }
+
+    .notes-grid {
+        padding: 1rem;
+        gap: 1rem;
+    }
 }
 
 @media (max-width: 768px) {

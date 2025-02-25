@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload Notes - KU Notes Hub</title>
     <link rel="stylesheet" href="{% static 'css/upload.css' %}">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -55,6 +56,8 @@
                 </div>
 
                 <div class="form-group">
+                    <span class="loader"></span>
+
                     <label for="singleFileUpload">Upload File* (PDF only)</label>
                     <div class="file-upload-area" id="singleFileArea">
                         <input type="file" id="singleFileUpload" accept=".pdf" hidden>
@@ -67,7 +70,7 @@
                     </div>
                 </div>
 
-                <button type="submit" class="submit-btn">Upload Document</button>
+                <button type="button" class="submit-btn" id="singleUploadButton">Upload Document</button>
             </form>
 
             <!-- Batch Upload Form -->
