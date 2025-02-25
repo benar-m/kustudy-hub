@@ -1,0 +1,250 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 80px;
+}
+
+.logo {
+    text-decoration: none;
+    color: black;
+    font-size: 1.2rem;
+}
+
+.nav-center {
+    display: flex;
+    gap: 0.5rem;
+    flex: 1;
+    max-width: 400px;
+    height: 40px;
+    margin: 0 2rem;
+}
+
+.search-box {
+    flex: 1;
+    padding: 0.5rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    outline: none;
+
+}
+
+.search-btn,
+.icon-btn {
+    padding: 0.5rem 1rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.nav-right {
+    display: flex;
+    gap: 1rem;
+}
+
+/* Slider Styles */
+.slider-container {
+    position: relative;
+    max-width: 1200px;
+    margin: 2rem auto;
+    overflow: hidden;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.slider {
+    display: flex;
+    transition: transform 0.3s ease-in-out;
+}
+
+.slide {
+    min-width: 100%;
+    padding: 3rem 2rem;
+    text-align: center;
+    display: none;
+}
+
+.slide.active {
+    display: block;
+}
+
+.slide h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.slide p {
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+.upload-btn {
+    padding: 0.8rem 2rem;
+    background-color: rgb(0, 0, 0);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    border-radius: 15px;
+}
+
+.prev-btn,
+.next-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.3);
+    color: white;
+    padding: 1rem;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+.prev-btn {
+    left: 0;
+    background-color: #ffffff;
+    color: #000000;
+
+}
+
+.next-btn {
+    right: 0;
+    background-color: #ffffff;
+    color: #000000;
+
+}
+
+.dots-container {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.5rem;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    background-color: #dfdbdb;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.dot.active {
+    background-color: rgb(0, 0, 0);
+}
+
+/* Notes Grid Styles */
+.notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.note-card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.note-card:hover {
+    transform: translateY(-4px);
+}
+
+.pdf-icon {
+    background-color: #ff0000;
+    color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1.5rem auto;
+    font-weight: bold;
+}
+
+.note-info {
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.course-code {
+    color: #000000;
+    margin-bottom: 0.5rem;
+}
+
+.note-info h3 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    min-height: 2.6em;
+}
+
+.pages {
+    color: #000000;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.price {
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.view-pdf-btn {
+    background-color: #0011ff;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 0.9rem;
+}
+
+.view-pdf-btn:hover {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+@media (max-width: 768px) {
+    .nav-center {
+        margin: 0 1rem;
+    }
+
+    .slide {
+        padding: 2rem 1rem;
+    }
+
+    .slide h2 {
+        font-size: 1.5rem;
+    }
+
+    .notes-grid {
+        padding: 1rem;
+        gap: 1rem;
+    }
+}

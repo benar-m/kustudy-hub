@@ -1,0 +1,104 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KU Notes Hub</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="#" class="logo"><strong>KU Notes Hub</strong></a>
+        </div>
+
+        <div class="nav-center">
+            <input type="text" class="search-box" placeholder="Search Unit Code or Title">
+            <button class="search-btn">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+
+        <div class="nav-right">
+            <button class="icon-btn"><i class="fas fa-bars"></i></button>
+            <button class="icon-btn"><i class="fas fa-user"></i></button>
+            <button class="icon-btn"><i class="fas fa-cog"></i></button>
+        </div>
+    </nav>
+
+    <div class="slider-container">
+        <div class="slider">
+            <div class="slide active">
+                <h2>📤 Upload Your Notes & Help Others!</h2>
+                <p>Share your study materials and help fellow students. It's free and easy!</p>
+                <button class="upload-btn">Upload Now</button>
+            </div>
+            <div class="slide">
+                <h2>🌍 Contribute to a Learning Community</h2>
+                <p>Every upload makes a difference. Join us in creating a free knowledge hub.</p>
+                <button class="upload-btn">Get Started</button>
+            </div>
+            <div class="slide">
+                <h2>🚀 Your Notes, Your Impact</h2>
+                <p>Help students ace their exams by sharing what you've learned.</p>
+                <button class="upload-btn">Share Notes</button>
+            </div>
+        </div>
+
+        <button class="prev-btn">❮</button>
+        <button class="next-btn">❯</button>
+
+        <div class="dots-container">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+    </div>
+
+    <div class="notes-grid">
+        <div class="note-card">
+            <div class="pdf-icon">PDF</div>
+            <div class="note-info">
+                <div class="course-code">SMA200</div>
+                <h3>CALCULUS 2</h3>
+                <div class="pages">60 Pages</div>
+                <a href="/upload.html"><button class="view-pdf-btn">View PDF</button></a>
+            </div>
+        </div>
+
+        <div class="note-card">
+            <div class="pdf-icon">PDF</div>
+            <div class="note-info">
+                <div class="course-code">SMA201</div>
+                <h3>LINEAR ALGEBRA</h3>
+                <div class="pages">58 Pages</div>
+                <button class="view-pdf-btn">View PDF</button>
+            </div>
+        </div>
+
+        <div class="note-card">
+            <div class="pdf-icon">PDF</div>
+            <div class="note-info">
+                <div class="course-code">UCU100</div>
+                <h3>COMMUNICATION SKILLS</h3>
+                <div class="pages">3 Pages</div>
+                <button class="view-pdf-btn">View PDF</button>
+            </div>
+        </div>
+        <div class="note-card">
+            <div class="pdf-icon">PDF</div>
+            <div class="note-info">
+                <div class="course-code">SMA201</div>
+                <h3>LINEAR ALGEBRA</h3>
+                <div class="pages">58 Pages</div>
+                <button  class="view-pdf-btn">View PDF</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="{% static 'js/slider.js' %}"></script>
+</body>
+</html>

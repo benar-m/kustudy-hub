@@ -1,0 +1,96 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Notes - KU Notes Hub</title>
+    <link rel="stylesheet" href="{% static 'css/upload.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="index.html" class="logo"><strong>KU Notes Hub</strong></a>
+        </div>
+        <div class="nav-right">
+            <button class="icon-btn"><i class="fas fa-bars"></i></button>
+            <button class="icon-btn"><i class="fas fa-user"></i></button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="upload-container">
+            <h1>Upload Study Materials</h1>
+            
+            <div class="mode-switch">
+                <span class="mode-label">Single Upload</span>
+                <label class="switch">
+                    <input type="checkbox" id="uploadModeToggle">
+                    <span class="slider round"></span>
+                </label>
+                <span class="mode-label">Batch Upload</span>
+            </div>
+
+            <!-- Single Upload Form -->
+            <form id="singleUploadForm" class="upload-form active">
+                <div class="form-group">
+                    <label for="unitCode">Unit Code*</label>
+                    <input type="text" id="unitCode" required placeholder="e.g., SCH101">
+                </div>
+
+                <div class="form-group">
+                    <label for="unitTitle">Unit Title*</label>
+                    <input type="text" id="unitTitle" required placeholder="e.g., Introduction to Physical Chemistry">
+                </div>
+
+                <div class="form-group">
+                    <label for="documentType">Document Type*</label>
+                    <select id="documentType" required>
+                        <option value="">Select document type</option>
+                        <option value="lecture">Lecture Notes</option>
+                        <option value="past-paper">Past Papers</option>
+                        <option value="textbook">Reference Material (Text Books)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="singleFileUpload">Upload File* (PDF only)</label>
+                    <div class="file-upload-area" id="singleFileArea">
+                        <input type="file" id="singleFileUpload" accept=".pdf" hidden>
+                        <div class="upload-content">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Drag & drop your file here or</p>
+                            <button type="button" class="browse-btn">Browse Files</button>
+                            <p class="file-info">Maximum file size: 10MB</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">Upload Document</button>
+            </form>
+
+            <!-- Batch Upload Form -->
+            <form id="batchUploadForm" class="upload-form">
+                <div class="form-group">
+                    <label>Batch Upload Files* (PDF only)</label>
+                    <div class="file-upload-area batch" id="batchFileArea">
+                        <input type="file" id="batchFileUpload" accept=".pdf" multiple hidden>
+                        <div class="upload-content">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Drag & drop multiple files here or</p>
+                            <button type="button" class="browse-btn">Browse Files</button>
+                            <p class="file-info">Maximum 10 files, 10MB each</p>
+                        </div>
+                    </div>
+                    <div id="fileList" class="file-list"></div>
+                </div>
+
+                <button type="submit" class="submit-btn">Upload Documents</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="{% static 'js/upload.js' %}"></script>
+</body>
+</html>
