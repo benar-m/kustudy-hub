@@ -13,10 +13,12 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 2rem;
+    padding: 1rem;
     background-color: white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     height: 80px;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 .logo {
@@ -59,7 +61,8 @@ body {
 /* Slider Styles */
 .slider-container {
     position: relative;
-    max-width: 1200px;
+    max-width: 100%;
+    width: 100%;
     margin: 2rem auto;
     overflow: hidden;
     background: white;
@@ -70,6 +73,8 @@ body {
 .slider {
     display: flex;
     transition: transform 0.3s ease-in-out;
+    flex-wrap: nowrap;
+    width: 100%;
 }
 
 .slide {
@@ -159,8 +164,9 @@ body {
     /* grid-template-columns: repeat(4,1fr); */
     gap: 1rem;
     padding: 2rem;
-    max-width: 1200px;
+    max-width: 100%;
     margin: 0 auto;
+    width: 100%;
 }
 
 .note-card {
@@ -267,25 +273,14 @@ body {
   }
       
 @media (max-width: 768px) {
-    .nav-center {
-        margin: 0 1rem;
+    html, body {
+        overflow-x: hidden;
+        max-width: 100vw;
     }
-
-    .slide {
-        padding: 2rem 1rem;
+    * {
+        max-width: 100%;
     }
-
-    .slide h2 {
-        font-size: 1.5rem;
-    }
-
-    .notes-grid {
-        padding: 1rem;
-        gap: 1rem;
-    }
-}
-
-@media (max-width: 768px) {
+    
     .nav-center {
         margin: 0 1rem;
     }

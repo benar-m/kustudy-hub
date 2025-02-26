@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </a>
                 </div>
             `;
-            notesGrid.appendChild(noteCard); // Append the card to the grid
+            notesGrid.appendChild(noteCard);
         });
     });
 });
