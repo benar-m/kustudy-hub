@@ -56,8 +56,6 @@
                 </div>
 
                 <div class="form-group">
-                    <span class="loader"></span>
-
                     <label for="singleFileUpload">Upload File* (PDF only)</label>
                     <div class="file-upload-area" id="singleFileArea">
                         <input type="file" id="singleFileUpload" accept=".pdf" hidden>
@@ -78,18 +76,19 @@
                 <div class="form-group">
                     <label>Batch Upload Files* (PDF only)</label>
                     <div class="file-upload-area batch" id="batchFileArea">
-                        <input type="file" id="batchFileUpload" accept=".pdf" multiple hidden>
+                        <input type="file" id="batchFileUpload" multiple hidden>
                         <div class="upload-content">
+                            <div class="loader"></div> 
                             <i class="fas fa-cloud-upload-alt"></i>
                             <p>Drag & drop multiple files here or</p>
                             <button type="button" class="browse-btn">Browse Files</button>
-                            <p class="file-info">Maximum 10 files, 10MB each</p>
+                            <p class="file-info">Maximum 30 files, 10MB each</p>
                         </div>
                     </div>
                     <div id="fileList" class="file-list"></div>
                 </div>
 
-                <button type="submit" class="submit-btn">Upload Documents</button>
+                <button type="submit" class="submit-btn" id="batchUploadBtn">Upload Documents</button>
             </form>
         </div>
     </div>

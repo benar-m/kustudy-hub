@@ -6,6 +6,8 @@ from DocSort.sort_pdfs import upload_pdf_to_cloudinary,extract_pdf_page_count
 from datetime import date
 from django.views.decorators.csrf import csrf_exempt
 import fitz
+from django.conf import settings
+import os
 
 
 def get_units(request):
@@ -68,3 +70,27 @@ def single_upload_pdf(request):
 
     # Handle non-POST requests
     return JsonResponse({"message": "Invalid request method"}, status=405)
+
+
+@csrf_exempt
+def multipleFileUploads(request):
+    if request.method=='POST' and request.FILES.getlist('files'):
+        uploaded_files = request.FILES.getlist('files')  # Get multiple files
+        save_dir = os.path.join(settings.MEDIA_ROOT, 'unsorted_pdfs')  # Store in media/uploads/
+
+        os.makedirs(save_dir, exist_ok=True)  # Ensure directory exists
+
+        file_urls = []
+        for file in uploaded_files:
+            file_path = os.path.join(save_dir, file.name)
+            
+            # Save file to disk
+            with open(file_path, 'wb+') as destination:
+                for chunk in file.chunks():
+                    destination.write(chunk)
+
+            file_urls.append(f"{settings.MEDIA_URL}uploads/{file.name}")
+
+        return JsonResponse({'message': 'Files uploaded successfully!', 'files': file_urls})
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)

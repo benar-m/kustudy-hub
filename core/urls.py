@@ -8,6 +8,7 @@ urlpatterns=[
     path('upload/',views.render_upload_pdf,name='upload_pdf'),
     path('units/',views.render_units,name='units'),
     path('api/upload_pdf/',views.single_upload_pdf,name='single_upload_pdf'),
+    path('api/batchUpload/',views.multipleFileUploads,name='multipleFileUpload'),
 
     
     

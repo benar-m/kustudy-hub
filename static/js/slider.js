@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Auto advance slides every 5 seconds
-    setInterval(nextSlide, 5000);
+    setInterval(nextSlide, 20000);
 
     //Search Functionality
     searchInput.addEventListener('input', () => {
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const filteredUnits = units.filter(unit => {
             return unit.unitCode.toLowerCase().includes(searchValue) || unit.unitTitle.toLowerCase().includes(searchValue);
         });
-
+3
         notesGrid.innerHTML = '';
         filteredUnits.forEach(unit => {
             const noteCard = document.createElement('div');
