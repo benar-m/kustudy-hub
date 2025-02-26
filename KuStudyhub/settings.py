@@ -27,7 +27,6 @@ import cloudinary.api
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 BASE_DIR = Path(__file__).resolve().parent.parent
-django_heroku.settings(locals())
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -150,3 +149,4 @@ cloudinary.config(
     api_key=CLOUDINARY_STORAGE['API_KEY'],
     api_secret=CLOUDINARY_STORAGE['API_SECRET']
 )
+django_heroku.settings(locals())
