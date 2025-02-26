@@ -4,7 +4,9 @@ cloudinary==1.42.2
 dj-database-url==2.3.0
 Django==5.1.6
 django-heroku==0.3.1
+gunicorn==23.0.0
 numpy==2.2.3
+packaging==24.2
 pandas==2.2.3
 psycopg2-binary==2.9.10
 PyMuPDF==1.25.3
