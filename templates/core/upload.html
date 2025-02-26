@@ -75,8 +75,9 @@
             <form id="batchUploadForm" class="upload-form">
                 <div class="form-group">
                     <label>Batch Upload Files* (PDF only)</label>
-                    <div class="file-upload-area batch" id="batchFileArea">
-                        <input type="file" id="batchFileUpload" multiple hidden>
+                    <div class="file-upload-area batch" id="batchFileArea" >
+                        <!-- only pdfs -->
+                        <input type="file" id="batchFileUpload" accept=".pdf"  multiple hidden>
                         <div class="upload-content">
                             <div class="loader"></div> 
                             <i class="fas fa-cloud-upload-alt"></i>

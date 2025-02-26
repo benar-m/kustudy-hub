@@ -9,6 +9,7 @@ urlpatterns=[
     path('units/',views.render_units,name='units'),
     path('api/upload_pdf/',views.single_upload_pdf,name='single_upload_pdf'),
     path('api/batchUpload/',views.multipleFileUploads,name='multipleFileUpload'),
+    path('googlefd298c7641c3b2af.html',views.render_search_console_verifier,name='google_verification'),
 
     
     

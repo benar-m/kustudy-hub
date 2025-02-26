@@ -146,3 +146,6 @@ def multipleFileUploads(request):
         return JsonResponse({'message': 'Files processed and uploaded!', 'files': file_urls})
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+def render_search_console_verifier(request):
+    return render(request, 'core/googlefd298c7641c3b2af.html')
