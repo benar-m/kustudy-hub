@@ -9,10 +9,8 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 import django_heroku
-django_heroku.settings(locals())
 
 from pathlib import Path
 import os
@@ -28,6 +26,9 @@ import cloudinary.api
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
+BASE_DIR = Path(__file__).resolve().parent.parent
+django_heroku.settings(locals())
+
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'REMOVED_SECRET'
