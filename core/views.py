@@ -149,3 +149,6 @@ def multipleFileUploads(request):
 
 def render_search_console_verifier(request):
     return render(request, 'core/googlefd298c7641c3b2af.html')
+
+def render_reader(request):
+    return render(request, 'core/pdf-reader.html')

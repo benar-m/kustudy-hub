@@ -81,6 +81,24 @@
     color: #000000;
     border: 1px solid #000000;
 }
+.read-btn {
+    background-color: #000000;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.read-btn:hover {
+    background-color: #ffffff;
+    color: #000000;
+    border: 1px solid #000000;
+}
 
 .bookmark-btn {
     background: none;

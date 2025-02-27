@@ -4,6 +4,15 @@ document.addEventListener('DOMContentLoaded', async function() {
     const urlParams = new URLSearchParams(window.location.search);
     const unitId = urlParams.get('unitId');
 
+    function comingSoon() {
+        const messagearea = document.getElementById('comingSoon');
+        if (messagearea) {
+            messagearea.style.display = 'block';
+        }
+    }
+    
+
+    
     if (unitId) {
         try {
             const unitDetailsRes = await fetch('/api/units/');
@@ -21,6 +30,10 @@ document.addEventListener('DOMContentLoaded', async function() {
                         <div class="unit-title">${pdf.pdfTitle}</div>
                     </div>
                     <div class="unit-actions">
+                    <button class="read-btn" filelink="${pdf.pdfDownloadLink}" 
+                                data-filename="${pdf.pdfTitle.replace(/\s+/g, '_')}.pdf">
+                            <i class="fas fa-book"></i> Read
+                        </button>
                         <button class="download-btn" data-url="${pdf.pdfDownloadLink}" 
                                 data-filename="${pdf.pdfTitle.replace(/\s+/g, '_')}.pdf">
                             <i class="fas fa-download"></i> Download
@@ -28,6 +41,14 @@ document.addEventListener('DOMContentLoaded', async function() {
                     </div>
                 </div>
             `).join('');
+            document.querySelectorAll('.read-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    console.log('Read button clicked');
+                    const link = button.getAttribute('filelink'); 
+                    window.location.href = `/reader?filelink=${encodeURIComponent(link)}`;
+                });
+            });
+        
 
         } catch (error) {
             console.error('Error fetching unit details or PDFs:', error);
@@ -36,6 +57,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     } else {
         unitsList.innerHTML = '<p>No unit selected. Please go back and select a unit.</p>';
     }
+   
 
     function renderUnits(units) {
         unitsList.innerHTML = units.map(unit => `
@@ -52,6 +74,16 @@ document.addEventListener('DOMContentLoaded', async function() {
             </div>
         `).join('');
     }
+    document.querySelectorAll('.icon-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            comingSoon();
+            button.disabled = true; // Disable the button
+            setTimeout(() => {
+                button.disabled = false; // Re-enable after 3 seconds
+            }, 3000);
+        });
+    });
+    
 
     document.addEventListener('click', async function(e) {
         if (e.target.closest('.download-btn')) {

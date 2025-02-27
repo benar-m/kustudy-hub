@@ -8,6 +8,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const notesGrid = document.querySelector('.notes-grid');
     const loader= document.querySelector('.loader');
     const searchInput = document.querySelector('.search-box');
+    function comingSoon() {
+        const messagearea = document.getElementById('comingSoon');
+        messagearea.style.display = 'block';
+    
+        // Hide the message after 3 seconds
+        setTimeout(() => {
+            messagearea.style.display = 'none';
+        }, 3000);
+    }
     let units=[];
 
     // Fetch data from the API
@@ -69,14 +78,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Auto advance slides every 5 seconds
     setInterval(nextSlide, 20000);
+    document.querySelectorAll('.icon-btn').forEach(button => {
+        button.addEventListener('click', comingSoon);
+    });
 
     //Search Functionality
     searchInput.addEventListener('input', () => {
-        const searchValue = searchInput.value.toLowerCase();
+        const searchValue = searchInput.value.toLowerCase().replace(/\s+/g, ''); // Remove spaces
         const filteredUnits = units.filter(unit => {
-            return unit.unitCode.toLowerCase().includes(searchValue) || unit.unitTitle.toLowerCase().includes(searchValue);
+            const unitCodeNoSpaces = unit.unitCode.toLowerCase().replace(/\s+/g, ''); // Remove spaces from unitCode
+            const unitTitleNoSpaces = unit.unitTitle.toLowerCase().replace(/\s+/g, ''); // Remove spaces from unitTitle
+            return unitCodeNoSpaces.includes(searchValue) || unitTitleNoSpaces.includes(searchValue);
         });
-3
+    
         notesGrid.innerHTML = '';
         filteredUnits.forEach(unit => {
             const noteCard = document.createElement('div');
@@ -95,4 +109,4 @@ document.addEventListener('DOMContentLoaded', () => {
             notesGrid.appendChild(noteCard);
         });
     });
-});
+});    
