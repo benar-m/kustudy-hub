@@ -5,6 +5,23 @@ body {
     margin: 0;
     padding: 0;
 }
+/* Darkmode */
+body.dark-mode {
+    background-color: black;
+    color: white;
+}
+
+.pdf-page.dark-mode {
+    background-color: black;
+}
+#pdf-viewer.dark-mode {
+    background-color: black;
+    color: white;
+}
+.pdf-container.dark-mode {
+    background-color: black;
+}
+
 
 .navbar {
     position: sticky;

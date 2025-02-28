@@ -4,6 +4,33 @@ function getQueryParam(name) {
 }
 
 const url = getQueryParam('filelink');
+function darkMode() {
+    console.log('Dark mode clicked');
+    const body = document.body;
+    body.classList.toggle('dark-mode');
+
+    document.querySelectorAll('.pdf-page').forEach(page => {
+        page.classList.toggle('dark-mode'); 
+    });
+    document.querySelector('.pdf-container').classList.toggle('dark-mode');
+
+    document.getElementById('pdf-viewer').classList.toggle('dark-mode');
+
+    const darkModeBtnIcon= document.getElementById('darkmodeicon');
+    if (darkModeBtnIcon.classList.contains('fa-moon')) {
+        darkModeBtnIcon.classList.remove('fa-moon');
+        darkModeBtnIcon.classList.add('fa-sun');
+    }
+    else {
+        darkModeBtnIcon.classList.remove('fa-sun');
+        darkModeBtnIcon.classList.add('fa-moon');
+    }
+
+    // Change button text accordingly
+}
+
+
+
 
 if (!url) {
     console.error("No file link provided in URL");
@@ -57,6 +84,8 @@ if (!url) {
         }
     };
 
+
+
     // Load the PDF
     pdfjsLib.getDocument(url).promise.then(pdfDoc_ => {
         pdfDoc = pdfDoc_;
@@ -80,4 +109,9 @@ if (!url) {
             }
         }
     });
+
 }
+document.addEventListener('DOMContentLoaded', () => {
+    const darkModeBtn = document.getElementById('darkModeButton');
+    darkModeBtn.addEventListener('click', darkMode);
+});
