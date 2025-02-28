@@ -3,6 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="manifest" href="{% static 'manifest.json' %}">
     <meta name="description" content="Study at Kenyatta University? KU StudyHub gives free access and downloads to past papers and notes. No paywalls, just learning.h">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="keywords" content="KU StudyHub, Kenyatta University Notes, KU PDFs, KU past papers,Ku Study hub, ku studyhub">
@@ -25,8 +26,32 @@
     <link rel="canonical" href="https://www.kustudyhub.live/" />
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
 </head>
+
+        
 <body>
+    <button id="install-btn" style="display: none;">Install App</button>
+
+    <script>
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (event) => {
+        event.preventDefault();
+        deferredPrompt = event;
+        document.getElementById('install-btn').style.display = 'block';
+    });
+
+    document.getElementById('install-btn').addEventListener('click', () => {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(choice => {
+            if (choice.outcome === 'accepted') {
+                console.log('User installed the app');
+            }
+            deferredPrompt = null;
+        });
+    });
+    </script>
+
     <nav class="navbar">
         <div class="nav-left">
             <a href="#" class="logo" alt="KU StudyHub - Free Past Papers & Study Notes"><strong>KU Notes Hub</strong></a>
@@ -78,6 +103,20 @@
         <span class="loader"></span>
     </div>
 
+
     <script src="{% static 'js/slider.js' %}"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js', { scope: '/' })
+                .then(reg => console.log("Service Worker registered:", reg))
+                .catch(err => console.error("Service Worker registration failed:", err));
+        });
+    }
+    navigator.serviceWorker.getRegistration().then((reg) => {
+    if (reg) reg.update(); // Auto-checks for a new version
+});
+
+        </script>
 </body>
 </html>
