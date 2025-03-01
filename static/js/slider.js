@@ -76,7 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
         dot.addEventListener('click', () => showSlide(index));
     });
 
-    // Auto advance slides every 5 seconds
     setInterval(nextSlide, 20000);
     document.querySelectorAll('.icon-btn').forEach(button => {
         button.addEventListener('click', comingSoon);

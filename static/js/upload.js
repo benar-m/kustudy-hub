@@ -48,7 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
     singleUploadForm.classList.remove('active');
     batchUploadForm.classList.add('active');
 
-    // Toggle between single and batch upload modes
     uploadModeToggle.addEventListener('change', () => {
         if (uploadModeToggle.checked) {
             singleUploadForm.classList.remove('active');

@@ -50,6 +50,13 @@ document.addEventListener('DOMContentLoaded', async function() {
                     </div>
                 </div>
             `).join('');
+            document.querySelectorAll('.read-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    console.log('Read button clicked');
+                    const link = button.getAttribute('filelink'); 
+                    window.location.href = `/reader?filelink=${encodeURIComponent(link)}`;
+                });
+            });
         } catch (error) {
             console.error('Error fetching unit details or PDFs:', error);
             unitsList.innerHTML = '<p>Failed to load unit details. Please try again later.</p>';
