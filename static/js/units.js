@@ -18,10 +18,8 @@ document.addEventListener('DOMContentLoaded', async function() {
             const unitDetailsRes = await fetch('/api/units/');
             const unitDetails = await unitDetailsRes.json();
     
-            // Convert unitId to an integer for safe comparison
             const unitIdNum = parseInt(unitId, 10);
     
-            // Find the correct unit in the array
             const unit = unitDetails.find(u => u.id === unitIdNum);
     
             if (!unit) {
@@ -34,7 +32,6 @@ document.addEventListener('DOMContentLoaded', async function() {
             const pdfsRes = await fetch(`/api/unit/${unitId}/pdfs/`);
             const pdfs = await pdfsRes.json();
     
-            // Render PDFs
             unitsList.innerHTML = pdfs.map(pdf => `
                 <div class="unit-card">
                     <div class="unit-info">
