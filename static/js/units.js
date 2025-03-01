@@ -17,11 +17,23 @@ document.addEventListener('DOMContentLoaded', async function() {
         try {
             const unitDetailsRes = await fetch('/api/units/');
             const unitDetails = await unitDetailsRes.json();
-            const unitCode = unitDetails[unitId - 1].unitCode; // Extract unit code
-
+    
+            // Convert unitId to an integer for safe comparison
+            const unitIdNum = parseInt(unitId, 10);
+    
+            // Find the correct unit in the array
+            const unit = unitDetails.find(u => u.id === unitIdNum);
+    
+            if (!unit) {
+                unitsList.innerHTML = '<p>Unit not found.</p>';
+                return;
+            }
+    
+            const unitCode = unit.unitCode;
+    
             const pdfsRes = await fetch(`/api/unit/${unitId}/pdfs/`);
             const pdfs = await pdfsRes.json();
-
+    
             // Render PDFs
             unitsList.innerHTML = pdfs.map(pdf => `
                 <div class="unit-card">
@@ -30,7 +42,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                         <div class="unit-title">${pdf.pdfTitle}</div>
                     </div>
                     <div class="unit-actions">
-                    <button class="read-btn" filelink="${pdf.pdfDownloadLink}" 
+                        <button class="read-btn" filelink="${pdf.pdfDownloadLink}" 
                                 data-filename="${pdf.pdfTitle.replace(/\s+/g, '_')}.pdf">
                             <i class="fas fa-book"></i> Read
                         </button>
@@ -41,15 +53,6 @@ document.addEventListener('DOMContentLoaded', async function() {
                     </div>
                 </div>
             `).join('');
-            document.querySelectorAll('.read-btn').forEach(button => {
-                button.addEventListener('click', () => {
-                    console.log('Read button clicked');
-                    const link = button.getAttribute('filelink'); 
-                    window.location.href = `/reader?filelink=${encodeURIComponent(link)}`;
-                });
-            });
-        
-
         } catch (error) {
             console.error('Error fetching unit details or PDFs:', error);
             unitsList.innerHTML = '<p>Failed to load unit details. Please try again later.</p>';
