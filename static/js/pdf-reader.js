@@ -4,31 +4,50 @@ function getQueryParam(name) {
 }
 
 const url = getQueryParam('filelink');
-function darkMode() {
+let isDarkMode = false; // Track dark mode state
+
+function applyDarkMode(canvas, ctx) {
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    for (let i = 0; i < data.length; i += 4) {
+        data[i] = 255 - data[i];     // red
+        data[i + 1] = 255 - data[i + 1]; // green
+        data[i + 2] = 255 - data[i + 2]; // blue
+        // alpha remains the same
+    }
+    ctx.putImageData(imageData, 0, 0);
+}
+
+function toggleDarkMode() {
+    isDarkMode = !isDarkMode;
     const body = document.body;
-    body.classList.toggle('dark-mode');
+    body.classList.toggle('dark-mode', isDarkMode);
+    document.querySelector('.pdf-container').classList.toggle('dark-mode', isDarkMode);
+    document.getElementById('pdf-viewer').classList.toggle('dark-mode', isDarkMode);
 
-    document.querySelectorAll('.pdf-page').forEach(page => {
-        page.classList.toggle('dark-mode'); 
-    });
-    document.querySelector('.pdf-container').classList.toggle('dark-mode');
-
-    document.getElementById('pdf-viewer').classList.toggle('dark-mode');
-
-    const darkModeBtnIcon= document.getElementById('darkmodeicon');
+    const darkModeBtnIcon = document.getElementById('darkmodeicon');
     if (darkModeBtnIcon.classList.contains('fa-moon')) {
         darkModeBtnIcon.classList.remove('fa-moon');
         darkModeBtnIcon.classList.add('fa-sun');
-    }
-    else {
+    } else {
         darkModeBtnIcon.classList.remove('fa-sun');
         darkModeBtnIcon.classList.add('fa-moon');
     }
 
-    // Change button text accordingly
+    // Re-render visible pages with or without inversion
+    document.querySelectorAll('.pdf-page').forEach(canvas => {
+        const ctx = canvas.getContext('2d');
+        // Store the original content if not already stored
+        if (!canvas._originalData) {
+            canvas._originalData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        }
+        ctx.putImageData(canvas._originalData, 0, 0); // Restore original
+        if (isDarkMode) {
+            applyDarkMode(canvas, ctx);
+        }
+        canvas.classList.toggle('dark-mode', isDarkMode); // Keep your existing class toggle for background
+    });
 }
-
-
 
 
 if (!url) {
@@ -67,6 +86,12 @@ if (!url) {
 
             page.render(renderContext).promise.then(() => {
                 pagesRendering.delete(num);
+                if (isDarkMode) {
+                    applyDarkMode(canvas, ctx);
+                }
+                // Store the original data after initial render
+                canvas._originalData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
                 if (num < pdfDoc.numPages) {
                     renderPage(num + 1);
                 }
@@ -82,8 +107,6 @@ if (!url) {
             renderPage(num);
         }
     };
-
-
 
     // Load the PDF
     pdfjsLib.getDocument(url).promise.then(pdfDoc_ => {
@@ -112,5 +135,5 @@ if (!url) {
 }
 document.addEventListener('DOMContentLoaded', () => {
     const darkModeBtn = document.getElementById('darkModeButton');
-    darkModeBtn.addEventListener('click', darkMode);
+    darkModeBtn.addEventListener('click', toggleDarkMode);
 });
