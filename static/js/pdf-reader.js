@@ -5,7 +5,6 @@ function getQueryParam(name) {
 
 const url = getQueryParam('filelink');
 function darkMode() {
-    console.log('Dark mode clicked');
     const body = document.body;
     body.classList.toggle('dark-mode');
 

@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(response => response.json())
         .then(data => {
             loader.style.display="none"
-            console.log(data);
+            // console.log(data);
             fileList.innerHTML=`<p style="color: green;">${data.message}</p>`
             // if (data.message) {
             //     document.getElementById("uploadStatus").innerHTML = 

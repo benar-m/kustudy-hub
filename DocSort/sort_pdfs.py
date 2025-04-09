@@ -89,6 +89,7 @@ def sort_pdfs():
                 file.unlink() 
     for pdf_file in UNSORTED_FOLDER.glob("*.pdf" or "*.PDF" or "*.Pdf" or "*.pDf" or "*.pdF" or "*.PDf" or "*.pDF" or "*.PdF" or "*..pdf" or "*.pDf" or "*.pdF" or "*.PDf" or "*.pDF" or "*.PdF" or "*..pdf"):
         unit_Code=direct_code_extraction(pdf_file.name)
+        print(pdf_file.name)
 
         if not unit_Code:
             unit_Code=extract_unit_code_from_pdf(pdf_file)
@@ -301,8 +302,8 @@ def correct_available_units():
             unit.save()
     print("Available units corrected successfully.")
 if __name__ == "__main__":
-    # sort_pdfs()
-    # clean_database()
-    Sort_Nursing_Files()
-    correct_available_units()
-    clean_units_column()
+    sort_pdfs()
+    clean_database()
+    # Sort_Nursing_Files()
+    # correct_available_units()
+    # clean_units_column()

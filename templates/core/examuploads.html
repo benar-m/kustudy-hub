@@ -1,0 +1,130 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Notes - KU Notes Hub</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'css/examuploads.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="/" class="logo"><strong>KU Notes Hub</strong></a>
+        </div>
+
+        <div class="nav-center">
+            <input type="text" class="search-box" placeholder="Search Unit Code or Title">
+            <button class="search-btn">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+
+        <div class="nav-right">
+            <button class="icon-btn"><i class="fas fa-bars"></i></button>
+            <button class="icon-btn"><i class="fas fa-user"></i></button>
+            <button class="icon-btn"><i class="fas fa-cog"></i></button>
+        </div>
+    </nav>
+
+    <div class="upload-container">
+        <h1>Share your SEM 2 Exam Question Papers</h1>
+        <p class="upload-subtitle">Take a Photo of your available Question papers and share</p>
+
+        <div class="upload-form">
+            <div id="upload-items-container">
+                <!-- Initial upload item -->
+                <div class="upload-item">
+                    <div class="file-upload-box">
+                        <input type="file" id="file-upload-1" class="file-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple>
+                        <label for="file-upload-1" class="file-label">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>Click to upload or drag files here</span>
+                            <p class="file-types">PDF, DOC, DOCX, JPG, JPEG, PNG</p>
+                        </label>
+                        <div class="file-preview"></div>
+                    </div>
+                    <div class="unit-info" style="display: none;">
+                        <div class="unit-header">
+                            <h3>Unit Information</h3>
+                            <span class="unit-badge">Unit 1</span>
+                        </div>
+                        <div class="input-group">
+                            <label for="unit-code-1">Unit Code*</label>
+                            <input type="text" id="unit-code-1" class="unit-code" placeholder="e.g. COMP3000">
+                        </div>
+                        <div class="input-group">
+                            <label for="unit-title-1">Unit Title (Optional)</label>
+                            <input type="text" id="unit-title-1" class="unit-title" placeholder="e.g. Software Engineering">
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label for="unit-year-1">Year*</label>
+                                <select id="unit-year-1" class="unit-year">
+                                    <option value="">Select Year</option>
+                                    <option value="1">Year 1</option>
+                                    <option value="2">Year 2</option>
+                                    <option value="3">Year 3</option>
+                                    <option value="4">Year 4</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label for="unit-semester-1">Semester*</label>
+                                <select id="unit-semester-1" class="unit-semester">
+                                    <option value="">Select Semester</option>
+                                    <option value="1">Semester 1</option>
+                                    <option value="2">Semester 2</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="upload-button-container" style="display: none;">
+                <button id="upload-button" class="upload-btn">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    Upload Notes
+                </button>
+                <div id="progress-container" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                    <div class="progress-text">Uploading... 0%</div>
+                </div>
+            </div>
+
+            <div id="success-message" style="display: none;">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h2>Thank You for Your Contribution!</h2>
+                <p>Your notes will help fellow students succeed.</p>
+                <button id="upload-more-btn" class="upload-more-btn">Upload More</button>
+            </div>
+        </div>
+
+        <div class="upload-benefits">
+            <div class="benefit-card">
+                <i class="fas fa-users"></i>
+                <h3>Help Others</h3>
+                <p>Share your knowledge and help fellow students succeed.</p>
+            </div>
+            <div class="benefit-card">
+                <i class="fas fa-medal"></i>
+                <h3>Earn Recognition</h3>
+                <p>Get recognized for your valuable contributions.</p>
+            </div>
+            <div class="benefit-card">
+                <i class="fas fa-lightbulb"></i>
+                <h3>Inspire Learning</h3>
+                <p>Your notes could be the key to someone's understanding and crucial to our continued innovation</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/uploader.js' %}"></script>
+</body>
+</html>

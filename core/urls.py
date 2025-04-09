@@ -11,6 +11,8 @@ urlpatterns=[
     path('api/batchUpload/',views.multipleFileUploads,name='multipleFileUpload'),
     path('googlefd298c7641c3b2af.html',views.render_search_console_verifier,name='google_verification'),
     path('reader/',views.render_reader,name='pdf_reader'),
+    path('examuploader/',views.render_examuploader,name="examsuploader"),
+    path('api/exam_papers/',views.upload_exam_papers_view,name='upload_exam_paper'),
 
     
     
