@@ -385,13 +385,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // --- Perform the Fetch Request ---
         const csrfToken = getCsrfToken();
-        if (!csrfToken) {
-            console.error("CSRF token not found. Cannot upload.");
-            alert("Error: Security token not found. Please refresh the page.");
-            uploadButton.disabled = false;
-            progressContainer.style.display = 'none';
-            return;
-        }
+        // if (!csrfToken) {
+        //     console.error("CSRF token not found. Cannot upload.");
+        //     alert("Error: Security token not found. Please refresh the page.");
+        //     uploadButton.disabled = false;
+        //     progressContainer.style.display = 'none';
+        //     return;
+        // }
 
         try {
             // Simulate progress
