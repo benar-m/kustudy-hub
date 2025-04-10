@@ -160,6 +160,7 @@ def multipleFileUploads(request):
 
 
 @require_POST
+@csrf_exempt
 def upload_exam_papers_view(request):
     """
     Handles POST requests to upload exam paper files, grouped by unit code,

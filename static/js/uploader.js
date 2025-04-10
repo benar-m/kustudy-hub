@@ -13,26 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Helper Functions ---
 
     /**
-     * Retrieves the CSRF token from cookies (standard Django method).
-     * @returns {string|null} The CSRF token or null if not found.
-     */
-    function getCsrfToken() {
-        let csrfToken = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                // Does this cookie string begin with the name we want?
-                if (cookie.startsWith('csrftoken=')) {
-                    csrfToken = decodeURIComponent(cookie.substring('csrftoken='.length));
-                    break;
-                }
-            }
-        }
-        return csrfToken;
-    }
-
-    /**
      * Sanitizes a string to be safe for use as part of a B2 path/key.
      * Allows alphanumeric, underscore, hyphen. Replaces others with underscore.
      * @param {string} code - The original unit code.
@@ -383,25 +363,13 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log(`Attempting to upload ${fileCountTotal} file(s) in total.`);
         progressText.textContent = `Uploading ${fileCountTotal} file(s)... 0%`;
 
-        // --- Perform the Fetch Request ---
-        const csrfToken = getCsrfToken();
-        // if (!csrfToken) {
-        //     console.error("CSRF token not found. Cannot upload.");
-        //     alert("Error: Security token not found. Please refresh the page.");
-        //     uploadButton.disabled = false;
-        //     progressContainer.style.display = 'none';
-        //     return;
-        // }
-
         try {
             // Simulate progress
             progressBarFill.style.width = '25%';
 
+            // Removed CSRF token check as per request
             const response = await fetch('/api/exam_papers/', { 
                 method: 'POST',
-                headers: {
-                    'X-CSRFToken': csrfToken
-                },
                 body: formData
             });
 
@@ -414,10 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } catch (e) {
                     errorData = { message: `Upload failed with status: ${response.status} ${response.statusText}` };
                 }
-                const error = new Error(errorData.message || 'Unknown upload error');
-                error.data = errorData; 
-                error.status = response.status;
-                throw error;
+                throw new Error(errorData.message || 'Unknown upload error');
             }
 
             // --- Handle Success ---
@@ -435,18 +400,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             // --- Handle Errors ---
             console.error('Upload failed:', error);
-            let errorMessage = 'An unexpected error occurred during upload.';
-            if (error.data && error.data.message) {
-                errorMessage = `Upload failed: ${error.data.message}`;
-                if (error.data.errors) {
-                    console.error("Specific errors:", error.data.errors);
-                    errorMessage += " Check console for details.";
-                }
-            } else if (error.message) {
-                errorMessage = error.message;
-            }
-
-            alert(errorMessage);
+            
+            // Simplified error handling
+            alert("Upload failed. Please try again.");
             uploadButton.disabled = false;
             progressContainer.style.display = 'none';
         }
