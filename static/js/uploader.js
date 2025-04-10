@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', () => {
     // --- Get DOM Elements ---
     const uploadItemsContainer = document.getElementById('upload-items-container');
@@ -9,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressText = progressContainer.querySelector('.progress-text');
     const successMessageContainer = document.getElementById('success-message');
     const uploadMoreButton = document.getElementById('upload-more-btn');
+    let uploadItemCount = 1;
 
     // --- Helper Functions ---
 
@@ -50,27 +50,63 @@ document.addEventListener('DOMContentLoaded', () => {
      * @returns {HTMLElement} The preview element.
      */
     function createFilePreviewElement(file) {
-        const previewElement = document.createElement('div');
-        previewElement.classList.add('file-preview-item');
-
-        const icon = document.createElement('i');
-        icon.classList.add('fas', 'fa-file-alt'); // Generic file icon
-        // Optional: Add specific icons based on file.type
-
-        const fileName = document.createElement('span');
-        fileName.textContent = file.name;
-        fileName.classList.add('file-preview-name');
-
-        previewElement.appendChild(icon);
-        previewElement.appendChild(fileName);
-        return previewElement;
+        const fileItem = document.createElement('div');
+        fileItem.className = 'file-item';
+        
+        // Determine icon based on file type
+        let icon = 'fa-file';
+        if (file.type.includes('pdf')) {
+            icon = 'fa-file-pdf';
+        } else if (file.type.includes('image')) {
+            icon = 'fa-file-image';
+        } else if (file.type.includes('word')) {
+            icon = 'fa-file-word';
+        }
+        
+        // Truncate filename if too long
+        let fileName = file.name;
+        if (fileName.length > 20) {
+            const extension = fileName.split('.').pop();
+            fileName = fileName.substring(0, 17) + '...' + (extension ? '.' + extension : '');
+        }
+        
+        fileItem.innerHTML = `
+            <i class="fas ${icon}"></i>
+            <span title="${file.name}">${fileName}</span>
+            <span class="remove-file"><i class="fas fa-times"></i></span>
+        `;
+        
+        // Add remove file functionality
+        const removeButton = fileItem.querySelector('.remove-file');
+        removeButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            fileItem.remove();
+            
+            // Check if this was the last file in the preview
+            const parentPreview = fileItem.closest('.file-preview');
+            if (parentPreview && parentPreview.children.length === 0) {
+                const uploadItem = parentPreview.closest('.upload-item');
+                const unitInfo = uploadItem.querySelector('.unit-info');
+                unitInfo.style.display = 'none';
+                
+                // Check if any other item has files
+                const anyFilesSelected = Array.from(uploadItemsContainer.querySelectorAll('.file-input'))
+                    .some(input => input.files.length > 0);
+                    
+                if (!anyFilesSelected) {
+                    uploadButtonContainer.style.display = 'none';
+                }
+            }
+        });
+        
+        return fileItem;
     }
 
     /**
      * Resets a single upload item to its initial state.
      * @param {HTMLElement} item - The .upload-item element.
      */
-     function resetUploadItem(item) {
+    function resetUploadItem(item) {
         const fileInput = item.querySelector('.file-input');
         const filePreview = item.querySelector('.file-preview');
         const unitInfo = item.querySelector('.unit-info');
@@ -82,35 +118,103 @@ document.addEventListener('DOMContentLoaded', () => {
         if (fileInput) fileInput.value = ''; // Clear selected files
         if (filePreview) filePreview.innerHTML = ''; // Clear previews
         if (unitInfo) unitInfo.style.display = 'none'; // Hide unit info
-        if (unitCodeInput) unitCodeInput.value = '';
+        if (unitCodeInput) {
+            unitCodeInput.value = '';
+            unitCodeInput.classList.remove('error');
+        }
         if (unitTitleInput) unitTitleInput.value = '';
-        if (unitYearSelect) unitYearSelect.selectedIndex = 0;
-        if (unitSemesterSelect) unitSemesterSelect.selectedIndex = 0;
-        // Reset any validation error states if you added them
+        if (unitYearSelect) {
+            unitYearSelect.selectedIndex = 0;
+            unitYearSelect.classList.remove('error');
+        }
+        if (unitSemesterSelect) {
+            unitSemesterSelect.selectedIndex = 0;
+            unitSemesterSelect.classList.remove('error');
+        }
     }
 
     /**
      * Resets the entire form to allow more uploads.
      */
     function resetForm() {
-        const allUploadItems = uploadItemsContainer.querySelectorAll('.upload-item');
-        allUploadItems.forEach(resetUploadItem);
-
-        // Ensure the first item's unit info is hidden and preview cleared
-        if (allUploadItems.length > 0) {
-             resetUploadItem(allUploadItems[0]);
-        }
-
+        // Reset the form
+        uploadItemsContainer.innerHTML = '';
+        uploadItemCount = 0;
+        addNewUploadItem();
+        
         // Reset visibility
         successMessageContainer.style.display = 'none';
-        uploadButtonContainer.style.display = 'none'; // Hide until files are selected again
+        uploadButtonContainer.style.display = 'none';
         progressContainer.style.display = 'none';
-        uploadItemsContainer.style.display = '';
+        uploadItemsContainer.style.display = 'block';
         uploadButton.disabled = false;
         progressBarFill.style.width = '0%';
         progressText.textContent = 'Uploading... 0%';
     }
 
+    /**
+     * Adds a new upload item to the container.
+     */
+    function addNewUploadItem() {
+        uploadItemCount++;
+        
+        const newItem = document.createElement('div');
+        newItem.className = 'upload-item';
+        newItem.innerHTML = `
+            <div class="file-upload-box">
+                <input type="file" id="file-upload-${uploadItemCount}" class="file-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple>
+                <label for="file-upload-${uploadItemCount}" class="file-label">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>Click to upload or drag files here</span>
+                    <p class="file-types">PDF, DOC, DOCX, JPG, JPEG, PNG</p>
+                </label>
+                <div class="file-preview"></div>
+            </div>
+            <div class="unit-info" style="display: none;">
+                <div class="unit-header">
+                    <h3>Unit Information</h3>
+                    <span class="unit-badge">Unit ${uploadItemCount}</span>
+                </div>
+                <div class="input-group">
+                    <label for="unit-code-${uploadItemCount}">Unit Code*</label>
+                    <input type="text" id="unit-code-${uploadItemCount}" class="unit-code" placeholder="e.g. COMP3000">
+                </div>
+                <div class="input-group">
+                    <label for="unit-title-${uploadItemCount}">Unit Title (Optional)</label>
+                    <input type="text" id="unit-title-${uploadItemCount}" class="unit-title" placeholder="e.g. Software Engineering">
+                </div>
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="unit-year-${uploadItemCount}">Year*</label>
+                        <select id="unit-year-${uploadItemCount}" class="unit-year">
+                            <option value="">Select Year</option>
+                            <option value="1">Year 1</option>
+                            <option value="2">Year 2</option>
+                            <option value="3">Year 3</option>
+                            <option value="4">Year 4</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="unit-semester-${uploadItemCount}">Semester*</label>
+                        <select id="unit-semester-${uploadItemCount}" class="unit-semester">
+                            <option value="">Select Semester</option>
+                            <option value="1">Semester 1</option>
+                            <option value="2">Semester 2</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        uploadItemsContainer.appendChild(newItem);
+        
+        // Add event listener to new file input
+        const newFileInput = document.getElementById(`file-upload-${uploadItemCount}`);
+        newFileInput.addEventListener('change', handleFileChange);
+        
+        // Setup drag and drop for the new upload box
+        setupDragAndDrop(newItem.querySelector('.file-upload-box'));
+    }
 
     /**
      * Updates the file preview and shows unit info for a specific item.
@@ -118,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function handleFileChange(event) {
         const fileInput = event.target;
-        const uploadItem = fileInput.closest('.upload-item'); // Find parent item
+        const uploadItem = fileInput.closest('.upload-item');
         if (!uploadItem) return;
 
         const filePreview = uploadItem.querySelector('.file-preview');
@@ -134,39 +238,40 @@ document.addEventListener('DOMContentLoaded', () => {
                 const previewElement = createFilePreviewElement(file);
                 filePreview.appendChild(previewElement);
             });
+            
             // Show unit info section for this item
-            unitInfo.style.display = ''; // Or 'block', 'flex' etc.
-            // Show the main upload button container if it's hidden
-            uploadButtonContainer.style.display = '';
+            unitInfo.style.display = 'block';
+            
+            // Show the main upload button container
+            uploadButtonContainer.style.display = 'block';
+            
+            // Add new upload item if this is the last one
+            if (uploadItem === uploadItemsContainer.lastElementChild) {
+                addNewUploadItem();
+            }
         } else {
             // Hide unit info if no files are selected
             unitInfo.style.display = 'none';
 
-            // Optional: Check if any *other* item still has files selected
-            // If not, hide the main upload button container again.
-            const allFileInputs = uploadItemsContainer.querySelectorAll('.file-input');
-            let anyFilesSelected = false;
-            allFileInputs.forEach(input => {
-                if (input.files.length > 0) {
-                    anyFilesSelected = true;
-                }
-            });
+            // Check if any other item still has files selected
+            const anyFilesSelected = Array.from(uploadItemsContainer.querySelectorAll('.file-input'))
+                .some(input => input.files.length > 0);
+                
             if (!anyFilesSelected) {
                 uploadButtonContainer.style.display = 'none';
             }
         }
     }
 
-
     /**
      * Handles the main upload process when the button is clicked.
      */
-     async function handleUpload() {
+    async function handleUpload() {
         const uploadItems = uploadItemsContainer.querySelectorAll('.upload-item');
         const formData = new FormData();
         let isValid = true;
         let fileCountTotal = 0;
-        const unitsProcessed = new Set(); // To check for duplicate unit codes if needed
+        const unitsProcessed = new Set(); // To check for duplicate unit codes
 
         // --- Prepare UI for Upload ---
         uploadButton.disabled = true;
@@ -175,101 +280,104 @@ document.addEventListener('DOMContentLoaded', () => {
         progressBarFill.style.width = '0%';
         progressText.textContent = 'Preparing upload...';
 
+        // Reset any previous error states
+        uploadItemsContainer.querySelectorAll('.error').forEach(el => {
+            el.classList.remove('error');
+        });
+
         // --- Iterate and Validate Each Upload Item ---
         uploadItems.forEach((item, index) => {
             const unitCodeInput = item.querySelector('.unit-code');
             const fileInput = item.querySelector('.file-input');
-            const unitNumberBadge = item.querySelector('.unit-badge'); // For error messages
+            const unitNumberBadge = item.querySelector('.unit-badge');
+            const yearSelect = item.querySelector('.unit-year');
+            const semesterSelect = item.querySelector('.unit-semester');
 
-            const unitCode = unitCodeInput.value.trim();
-            const files = fileInput.files;
-            const unitLabel = unitNumberBadge ? unitNumberBadge.textContent : `Item ${index + 1}`;
-
-
-            // Skip items with no files *selected* (they might just be empty placeholders)
-            if (files.length === 0) {
-                 console.log(`${unitLabel}: No files selected, skipping.`);
-                 // Don't mark as invalid, just skip empty items.
+            // Skip items with no files selected
+            if (!fileInput || fileInput.files.length === 0) {
                 return;
             }
 
-             // Now, if files ARE selected, the unit code MUST be present
+            const unitCode = unitCodeInput ? unitCodeInput.value.trim() : '';
+            const files = fileInput.files;
+            const unitLabel = unitNumberBadge ? unitNumberBadge.textContent : `Item ${index + 1}`;
+
+            // Validate unit code
             if (!unitCode) {
                 console.error(`${unitLabel}: Unit code is missing but files are selected.`);
-                // TODO: Display error message near the unitCodeInput for the user
-                // e.g., unitCodeInput.classList.add('error');
-                // Maybe add a general error message div somewhere.
+                unitCodeInput.classList.add('error');
                 isValid = false;
-                return; // Stop processing this item due to error
             }
 
-            // Optional: Check for duplicate unit codes if that's not allowed
-            if (unitsProcessed.has(unitCode.toUpperCase())) { // Case-insensitive check
+            // Check for duplicate unit codes
+            if (unitCode && unitsProcessed.has(unitCode.toUpperCase())) {
                 console.error(`${unitLabel}: Duplicate Unit Code "${unitCode}".`);
-                // TODO: Display error message
-                 isValid = false;
-                 return;
-            }
-            unitsProcessed.add(unitCode.toUpperCase());
-
-            // --- Sanitize and Append to FormData ---
-            const sanitizedUnitCode = sanitizeUnitCode(unitCode);
-            if (!sanitizedUnitCode) { // Should not happen if unitCode is not empty, but good check
-                 console.error(`${unitLabel}: Unit code "${unitCode}" resulted in empty sanitized code.`);
-                 isValid = false;
-                 return;
-            }
-            const formDataKey = `files_${sanitizedUnitCode}`;
-
-            console.log(`${unitLabel}: Adding ${files.length} files under key "${formDataKey}"`);
-            for (const file of files) {
-                formData.append(formDataKey, file);
-                fileCountTotal++;
+                unitCodeInput.classList.add('error');
+                isValid = false;
+            } else if (unitCode) {
+                unitsProcessed.add(unitCode.toUpperCase());
             }
 
-            // --- Optional: Append Metadata ---
-            const titleInput = item.querySelector('.unit-title');
-            const yearSelect = item.querySelector('.unit-year');
-            const semesterSelect = item.querySelector('.unit-semester');
-            // Basic validation for required Year/Semester if needed
+            // Validate year and semester
             const yearValue = yearSelect ? yearSelect.value : '';
             const semesterValue = semesterSelect ? semesterSelect.value : '';
-            if (!yearValue || !semesterValue) {
-                 console.error(`${unitLabel}: Year or Semester is missing for unit "${unitCode}".`);
-                 // TODO: Display error message near the selects
-                 isValid = false;
-                 // Decide if you want to return here or allow upload without year/sem
+            
+            if (!yearValue) {
+                console.error(`${unitLabel}: Year is missing for unit "${unitCode}".`);
+                yearSelect.classList.add('error');
+                isValid = false;
+            }
+            
+            if (!semesterValue) {
+                console.error(`${unitLabel}: Semester is missing for unit "${unitCode}".`);
+                semesterSelect.classList.add('error');
+                isValid = false;
             }
 
-            let metadata = {
-                originalCode: unitCode,
-                title: titleInput ? titleInput.value.trim() : '',
-                year: yearValue,
-                semester: semesterValue
-            };
-            formData.append(`metadata_${sanitizedUnitCode}`, JSON.stringify(metadata));
-            // --- End Optional Metadata ---
+            // If valid, add to formData
+            if (unitCode && isValid) {
+                const sanitizedUnitCode = sanitizeUnitCode(unitCode);
+                if (!sanitizedUnitCode) {
+                    console.error(`${unitLabel}: Unit code "${unitCode}" resulted in empty sanitized code.`);
+                    isValid = false;
+                    return;
+                }
+                
+                const formDataKey = `files_${sanitizedUnitCode}`;
+                console.log(`${unitLabel}: Adding ${files.length} files under key "${formDataKey}"`);
+                
+                for (const file of files) {
+                    formData.append(formDataKey, file);
+                    fileCountTotal++;
+                }
 
-        }); // End loop through uploadItems
-
+                // Add metadata
+                const titleInput = item.querySelector('.unit-title');
+                let metadata = {
+                    originalCode: unitCode,
+                    title: titleInput ? titleInput.value.trim() : '',
+                    year: yearValue,
+                    semester: semesterValue
+                };
+                formData.append(`metadata_${sanitizedUnitCode}`, JSON.stringify(metadata));
+            }
+        });
 
         // --- Final Validation Check ---
         if (!isValid) {
             console.error("Validation errors found. Please correct them and try again.");
-            alert("Validation errors found. Please check the form for missing or duplicate unit codes, or missing year/semester.");
-            // Re-enable button, hide progress
+            alert("Please check the form for missing or duplicate unit codes, or missing year/semester.");
             uploadButton.disabled = false;
             progressContainer.style.display = 'none';
-            return; // Stop upload
+            return;
         }
 
         if (fileCountTotal === 0) {
             console.warn("No files found to upload after processing all items.");
-             alert("No files found to upload. Please select files and provide unit codes.");
-            // Re-enable button, hide progress
+            alert("No files found to upload. Please select files and provide unit codes.");
             uploadButton.disabled = false;
             progressContainer.style.display = 'none';
-            return; // Stop upload
+            return;
         }
 
         console.log(`Attempting to upload ${fileCountTotal} file(s) in total.`);
@@ -280,15 +388,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!csrfToken) {
             console.error("CSRF token not found. Cannot upload.");
             alert("Error: Security token not found. Please refresh the page.");
-             uploadButton.disabled = false;
-             progressContainer.style.display = 'none';
-             return;
+            uploadButton.disabled = false;
+            progressContainer.style.display = 'none';
+            return;
         }
 
         try {
-            // **Progress Simulation:** Fetch API doesn't easily provide upload progress.
-            // We simulate by updating text. For real progress, use XMLHttpRequest.
-            progressBarFill.style.width = '25%'; // Simulate some progress
+            // Simulate progress
+            progressBarFill.style.width = '25%';
 
             const response = await fetch('/api/exam_papers/', { 
                 method: 'POST',
@@ -298,86 +405,155 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: formData
             });
 
-            progressBarFill.style.width = '75%'; 
+            progressBarFill.style.width = '75%';
 
             if (!response.ok) {
                 let errorData;
                 try {
                     errorData = await response.json();
                 } catch (e) {
-                    // Backend didn't send JSON or other parsing error
                     errorData = { message: `Upload failed with status: ${response.status} ${response.statusText}` };
                 }
-                 // Throw an error object compatible with the catch block
                 const error = new Error(errorData.message || 'Unknown upload error');
                 error.data = errorData; 
                 error.status = response.status;
                 throw error;
             }
 
-             // --- Handle Success ---
-             progressBarFill.style.width = '100%';
-             progressText.textContent = 'Upload Complete!';
-             const data = await response.json();
-             console.log('Upload successful:', data);
+            // --- Handle Success ---
+            progressBarFill.style.width = '100%';
+            progressText.textContent = 'Upload Complete!';
+            const data = await response.json();
+            console.log('Upload successful:', data);
 
-             // Hide form/progress, show success message
-             uploadItemsContainer.style.display = 'none';
-             uploadButtonContainer.style.display = 'none';
-             progressContainer.style.display = 'none'; // Hide progress finally
-             successMessageContainer.style.display = 'block'; // Or 'flex'
+            // Hide form/progress, show success message
+            uploadItemsContainer.style.display = 'none';
+            uploadButtonContainer.style.display = 'none';
+            progressContainer.style.display = 'none';
+            successMessageContainer.style.display = 'block';
 
         } catch (error) {
-             // --- Handle Errors (Network or Backend) ---
+            // --- Handle Errors ---
             console.error('Upload failed:', error);
             let errorMessage = 'An unexpected error occurred during upload.';
             if (error.data && error.data.message) {
                 errorMessage = `Upload failed: ${error.data.message}`;
-                if (error.data.errors) { // If backend sends specific field errors
-                     console.error("Specific errors:", error.data.errors);
-                     errorMessage += " Check console for details.";
+                if (error.data.errors) {
+                    console.error("Specific errors:", error.data.errors);
+                    errorMessage += " Check console for details.";
                 }
             } else if (error.message) {
-                 errorMessage = error.message; // Use message from thrown error
+                errorMessage = error.message;
             }
 
-             alert(errorMessage); // Show error to user
-
-             // Reset UI potentially
-             uploadButton.disabled = false;
-             progressContainer.style.display = 'none'; // Hide progress on error
+            alert(errorMessage);
+            uploadButton.disabled = false;
+            progressContainer.style.display = 'none';
         }
-
     }
 
+    /**
+     * Sets up drag and drop functionality for a file upload box.
+     * @param {HTMLElement} dropZone - The element to enable drag and drop on.
+     */
+    function setupDragAndDrop(dropZone) {
+        if (!dropZone) return;
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            dropZone.classList.add('highlight');
+        }
+        
+        function unhighlight() {
+            dropZone.classList.remove('highlight');
+        }
+        
+        dropZone.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const fileInput = dropZone.querySelector('.file-input');
+            if (!fileInput) return;
+            
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length > 0) {
+                fileInput.files = files;
+                
+                // Trigger change event
+                const event = new Event('change');
+                fileInput.dispatchEvent(event);
+            }
+        }
+    }
 
     // --- Event Listeners ---
-
-    // Use event delegation for file inputs inside the container
-    uploadItemsContainer.addEventListener('change', (event) => {
-        if (event.target.classList.contains('file-input')) {
-            handleFileChange(event);
-        }
-    });
-
+    
     // Upload button click
     uploadButton.addEventListener('click', handleUpload);
-
+    
     // "Upload More" button click
     uploadMoreButton.addEventListener('click', resetForm);
-
+    
+    // Add event listener to initial file input
+    const initialFileInput = document.getElementById('file-upload-1');
+    if (initialFileInput) {
+        initialFileInput.addEventListener('change', handleFileChange);
+    }
+    
+    // Setup drag and drop for initial upload box
+    setupDragAndDrop(document.querySelector('.file-upload-box'));
+    
+    // Fix for iOS touch events
+    function addTouchSupport() {
+        const fileLabels = document.querySelectorAll('.file-label');
+        fileLabels.forEach(label => {
+            label.addEventListener('click', function(e) {
+                e.preventDefault();
+                const fileInput = this.parentElement.querySelector('.file-input');
+                if (fileInput) fileInput.click();
+            });
+        });
+    }
+    
+    // Add touch support for mobile devices
+    addTouchSupport();
+    
+    // Fix for mobile viewport height issues
+    function setViewportHeight() {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }
+    
+    setViewportHeight();
+    window.addEventListener('resize', setViewportHeight);
+    
     // --- Initial State ---
     // Hide elements that shouldn't be visible initially
     uploadButtonContainer.style.display = 'none';
     progressContainer.style.display = 'none';
     successMessageContainer.style.display = 'none';
-     // Hide unit info in the initial item until files are selected
-     const initialItem = uploadItemsContainer.querySelector('.upload-item');
-     if (initialItem) {
-         const initialUnitInfo = initialItem.querySelector('.unit-info');
-         if (initialUnitInfo) initialUnitInfo.style.display = 'none';
-     }
-
-   
-
-}); // End DOMContentLoaded
+    
+    // Hide unit info in the initial item until files are selected
+    const initialItem = uploadItemsContainer.querySelector('.upload-item');
+    if (initialItem) {
+        const initialUnitInfo = initialItem.querySelector('.unit-info');
+        if (initialUnitInfo) initialUnitInfo.style.display = 'none';
+    }
+});
