@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import django_heroku
+from dotenv import load_dotenv
 
 from pathlib import Path
 import os
@@ -18,6 +19,9 @@ import dj_database_url
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 
@@ -29,13 +33,11 @@ import cloudinary.api
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'REMOVED_SECRET'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-dev-key-only-for-development')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = ["kustudyhub.herokuapp.com", "kustudyhub.live"]
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',') + ["kustudyhub.herokuapp.com", "kustudyhub.live"]
 # SECURE_SSL_REDIRECT = True
 # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
@@ -87,13 +89,25 @@ WSGI_APPLICATION = 'KuStudyhub.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default="REMOVED_SECRET",
-        conn_max_age=600,
-        ssl_require=True
-    )
-}
+# Use environment variable for production, SQLite for development
+DATABASE_URL = os.environ.get('DATABASE_URL')
+
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=True
+        )
+    }
+else:
+    # Development SQLite database
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
@@ -141,9 +155,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'REMOVED_SECRET',
-    'API_KEY': 'REMOVED_SECRET',
-    'API_SECRET': 'REMOVED_SECRET',
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', ''),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY', ''),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', ''),
 }
 cloudinary.config(
     cloud_name=CLOUDINARY_STORAGE['CLOUD_NAME'],
@@ -151,7 +165,7 @@ cloudinary.config(
     api_secret=CLOUDINARY_STORAGE['API_SECRET']
 )
 django_heroku.settings(locals())
-B2_APPLICATION_KEY_ID = "REMOVED_SECRET"
-B2_APPLICATION_KEY = "REMOVED_SECRET"
-B2_BUCKET_NAME = "REMOVED_SECRET"
-B2_UPLOAD_FOLDER = "REMOVED_SECRET"
+B2_APPLICATION_KEY_ID = os.environ.get('BACKBLAZE_APPLICATION_KEY_ID', '')
+B2_APPLICATION_KEY = os.environ.get('BACKBLAZE_APPLICATION_KEY', '')
+B2_BUCKET_NAME = os.environ.get('BACKBLAZE_BUCKET_NAME', '')
+B2_UPLOAD_FOLDER = os.environ.get('BACKBLAZE_BUCKET_FOLDER', 'uploads/')

@@ -31,7 +31,7 @@ def extract_text_inside_pdf(pdfPath):
     try:
         pdfDoc = fitz.open(pdfPath)
         text = ""
-        for page_num in range(3):
+        for page_num in range(min(3, pdfDoc.page_count)):
             page = pdfDoc[page_num]
             text += page.get_text()
         pdfDoc.close()
@@ -54,12 +54,14 @@ def upload_pdf_to_cloudinary(pdfPath,folder_name):
         )
         return response["secure_url"]
     except Exception as e:
-        print(f"Cloadinary upload failed: {e}")
+        print(f"Cloudinary upload failed: {e}")
         return None
 def extract_pdf_page_count(pdfPath):
     try:
         pdfDoc = fitz.open(pdfPath)
-        return pdfDoc.page_count
+        page_count = pdfDoc.page_count
+        pdfDoc.close()
+        return page_count
     except Exception as e:
         return None
     
@@ -87,7 +89,7 @@ def sort_pdfs():
             new_pdf = convert_to_pdf(file)
             if new_pdf:
                 file.unlink() 
-    for pdf_file in UNSORTED_FOLDER.glob("*.pdf" or "*.PDF" or "*.Pdf" or "*.pDf" or "*.pdF" or "*.PDf" or "*.pDF" or "*.PdF" or "*..pdf" or "*.pDf" or "*.pdF" or "*.PDf" or "*.pDF" or "*.PdF" or "*..pdf"):
+    for pdf_file in UNSORTED_FOLDER.glob("*.[Pp][Dd][Ff]"):
         unit_Code=direct_code_extraction(pdf_file.name)
         print(pdf_file.name)
 
@@ -189,44 +191,6 @@ unit_mapping = {
     "Normal Puerperium": "RCH 232",
     "Principles of Human Psychology": "RMS 230"
 }
-folder_unit_mapping = {
-    "Fund. Midwifery_Teckla Ngotie": "RCH 226",
-    "Nursing Skills and Documentation _Dr.Paul Wambugu": "RMS 133",
-    "Med Surg(Endocrine)_Loise Ndirangu": "RMS 222",
-    "Med Surg(Neurological)_Jerusha": "RMS 216",
-    "Physiology(Cell & excitable T.)_Dr. Mwaniki": "RMS 101",
-    "Med Surg(GIT)_ Paul Wambugu": "RMS 221",
-    "Physiology GIT _Dr. Mbira": "RMS 122",
-    "Drugs, Body system_ Gachuiri": "RMS 226",
-    "Biochemistry Tissue_Dr. Ojola": "RMS 140",
-    "Mycology- Virilogy_Glenna Kerubo": "RCH 221",
-    "Immunology_Rose Nyamao": "RCH 222",
-    "Normal Labour_Eunice Atsali": "RCH 231",
-    "Anatomy(Abdomen, L. Limbs)_Dr. Mwonjoria": "RCH 107",
-    "Physiology(Nervous system)_ Dr. William Gichui": "RMS 102",
-    "Normal Puerperium_Grace Kibet": "RCH 232",
-    "Physiology, Circulatory _Dr. Ndambuki": "RMS 126",
-    "Biochemistry(Biomolecules)_Ms Eunice": "RMS 110",
-    "Normal Pregnacy_ Eunice Atsali": "RCH 227",
-    "Drug Administration _Doris Wanja": "RCH XXX",
-    "Gross Anatomy_ Proff Sherry": "RCH 101",
-    "Systemic Anatomy_ Dr. Pam": "RCH 102",
-    "Profesionalism_Dr. Jerusha": "RMS 106",
-    "Pschology_Rosemary Olendo": "RMS 230",
-    "Med Surg(Musculoskeletal)_ Stephen Njuguna": "RMS 217",
-    "Anatomy(head, upperlimbs)_Dr.Kimata": "RCH 106",
-    "Chemotherapeutic_ Musau": "RMS 227",
-    "Dr. Chakaya_Nursing practice": "RMS 131",
-    "Human Nutrition _Dr. Regina Kamuhu": "RCH 116",
-    "Physiology,Respiratory and Renal_Dr. William Gichui": "RMS 127",
-    "First Aid & Bls_ Dr. Paul Wambugu": "RNS 100",
-    "Dev. Of organs and systems_Dr. Kibet": "RCH 112",
-    "Intro. Embryology_ Dr. Tecla": "RCH 111",
-    "Health Assessment _Dr. Lucy": "RMS 137",
-    "Nursing Theories_ Mr. Chakaya": "RMS 107",
-    "Biochemistry(Bioenergetics)_Dr. Thomas": "RMS 115",
-    "Physiology Endocrine-Reproduction _Dr. Mwaniki": "RMS 121",
-}
 
 def clean_text(text):
     """
@@ -244,20 +208,29 @@ def clean_folderName(text):
     text = re.sub(r'[^\w\s]', '', text)  # Remove special characters
     return text
 
-# Normalize dictionary keys
-cleaned_folder_unit_mapping = {clean_text(k): v for k, v in folder_unit_mapping.items()}
-
 def Sort_Nursing_Files():
+    reverse_unit_mapping = {v: k for k, v in unit_mapping.items()}
+    
     for folder in NURSING_FOLDER.iterdir():
         if folder.is_dir():
-            clean_folder_name = clean_text(folder.name)  # Normalize folder name
-            unit_code = cleaned_folder_unit_mapping.get(clean_folder_name, "None")  # Lookup
-            reverse_unit_mapping = {v: k for k, v in unit_mapping.items()}
-            unit_title = reverse_unit_mapping.get(unit_code, folder.name)
-            print(unit_title)
-            if unit_code == "None":
+            # Try to match folder name with unit titles in unit_mapping
+            folder_name = folder.name
+            best_match = None
+            
+            # Look for direct matches in unit_mapping keys
+            for unit_title, unit_code in unit_mapping.items():
+                if unit_title.lower() in folder_name.lower() or folder_name.lower() in unit_title.lower():
+                    best_match = unit_code
+                    break
+            
+            if not best_match:
                 print(f"Could not find unit code for folder {folder.name}")
                 continue
+                
+            unit_code = best_match
+            unit_title = reverse_unit_mapping.get(unit_code, folder.name)
+            print(f"Processing folder: {folder.name} -> {unit_code} ({unit_title})")
+            
             for file in folder.iterdir():
                 if file.suffix.lower() in [".doc", ".docx", ".ppt", ".pptx"]:
                     new_pdf = convert_to_pdf(file)
@@ -265,7 +238,7 @@ def Sort_Nursing_Files():
                         file.unlink()
 
             
-            for pdf_file in folder.glob("*.pdf" or "*.PDF" or "*.Pdf" or "*.pDf" or "*.pdF" or "*.PDf" or "*.pDF" or "*.PdF" or "*..pdf" or "*.pDf" or "*.pdF" or "*.PDf" or "*.pDF" or "*.PdF" or "*..pdf"):
+            for pdf_file in folder.glob("*.[Pp][Dd][Ff]"):
                 unit_folder = SORTED_FOLDER / unit_code
                 unit_folder.mkdir(exist_ok=True, parents=True)
                 folder_name=clean_folderName(folder.name)
