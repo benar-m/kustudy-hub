@@ -7,6 +7,8 @@ A Django web application for managing and organizing study materials, PDFs, and 
  - Refine the Sort Script (Docsort)
  - A more Whole Processing Pipeline
  - Tests
+ - Name All Units
+ - Dedupe files
 
 
 ## Features
